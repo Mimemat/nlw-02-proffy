@@ -4,7 +4,7 @@ import { db } from '../db/connection';
 import { convertHourToMinutes } from '../utils/convertHourToMinutes';
 
 interface IScheduleItem {
-  weekDay: number;
+  week_day: number;
   from: string;
   to: string;
 }
@@ -13,9 +13,9 @@ export class ClassesController {
   constructor(private database: typeof db) {}
 
   async index(request: Request, response: Response): Promise<Response> {
-    const { subject, weekDay, time } = request.query;
+    const { subject, week_day, time } = request.query;
 
-    if (!weekDay || !subject || !time) {
+    if (!week_day || !subject || !time) {
       return response.status(400).json({
         error: 'Missing filters to search classes',
       });
@@ -32,7 +32,7 @@ export class ClassesController {
           .select('class_schedule.*')
           .from('class_schedule')
           .whereRaw('`class_schedule`.`class_id` = `classes`.`id`')
-          .whereRaw('`class_schedule`.`week_day` = ??', [Number(weekDay)])
+          .whereRaw('`class_schedule`.`week_day` = ??', [Number(week_day)])
           .whereRaw('`class_schedule`.`from` <= ??', [timeInMinutes])
           .whereRaw('`class_schedule`.`to` > ??', [timeInMinutes]);
       })
@@ -77,7 +77,7 @@ export class ClassesController {
       const classSchedule = schedule.map((scheduleItem: IScheduleItem) => {
         return {
           class_id: classId,
-          week_day: scheduleItem.weekDay,
+          week_day: scheduleItem.week_day,
           from: convertHourToMinutes(scheduleItem.from),
           to: convertHourToMinutes(scheduleItem.to),
         };

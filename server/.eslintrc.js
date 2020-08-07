@@ -27,6 +27,7 @@ module.exports = {
     'max-classes-per-file': 'off',
     '@typescript-eslint/no-explicit-any': 'off',
     'no-console': 'off',
+    'camelcase': 'off',
     'no-plusplus': 'off',
     'consistent-return': 'off',
     'import/prefer-default-export': 'off',
