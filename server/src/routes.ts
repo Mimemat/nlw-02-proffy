@@ -14,6 +14,8 @@ router.post('/classes', (req, res) => classesController.create(req, res));
 
 router.get('/classes', (req, res) => classesController.index(req, res));
 
+router.get('/allClasses', (req, res) => classesController.show(req, res));
+
 router.post('/connections', (req, res) =>
   connectionsController.create(req, res)
 );

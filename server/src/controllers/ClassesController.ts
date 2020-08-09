@@ -100,4 +100,13 @@ export class ClassesController {
       });
     }
   }
+
+  async show(request: Request, response: Response): Promise<Response> {
+    const classes = await this.database
+      .select('*')
+      .from('classes')
+      .join('users', 'classes.user_id', '=', 'users.id')
+      .select(['classes.*', 'users.*']);
+    return response.json(classes);
+  }
 }
