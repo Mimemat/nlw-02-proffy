@@ -1,5 +1,7 @@
 import React from 'react';
 
+import { mutate as mutateGlobal } from 'swr';
+
 import whatsAppIcon from '../../assets/images/icons/whatsapp.svg';
 import './styles.css';
 import { api } from '../../services/api';
@@ -19,10 +21,11 @@ interface TeacherItemProps {
 }
 
 const TeacherItem: React.FC<TeacherItemProps> = ({ teacher }) => {
-  function createNewConnection() {
-    api.post('connections', {
+  async function createNewConnection() {
+    const { data } = await api.post<number[]>('connections', {
       userId: teacher.id,
     });
+    mutateGlobal('connections', data[0]);
   }
 
   return (

@@ -6,19 +6,20 @@ import { useFocusEffect } from '@react-navigation/native';
 import PageHeader from '../../components/PageHeader';
 import TeacherItem, { Teacher } from '../../components/TeacherItem';
 import { useFavorites } from '../../hooks/favorites';
-import { api } from '../../services/api';
+import { useGet } from '../../hooks/swr/useGet';
 
 import { styles } from './styles';
 
 const Favorites: React.FC = () => {
   const { favorites } = useFavorites();
+  const { data } = useGet<Teacher[]>('allClasses');
   const [teachers, setTeachers] = useState<Teacher[]>([]);
 
   const loadFavoriteTeachers = useCallback(() => {
-    api.get<Teacher[]>('allClasses').then(({ data }) => {
+    if (data) {
       setTeachers(data.filter(({ id }) => favorites.includes(id)));
-    });
-  }, [favorites]);
+    }
+  }, [favorites, data]);
 
   useFocusEffect(
     useCallback(() => {
@@ -38,7 +39,7 @@ const Favorites: React.FC = () => {
         }}
       >
         {teachers.map(teacher => (
-          <TeacherItem favorited={true} key={teacher.id} teacher={teacher} />
+          <TeacherItem key={teacher.id} teacher={teacher} />
         ))}
       </ScrollView>
     </View>

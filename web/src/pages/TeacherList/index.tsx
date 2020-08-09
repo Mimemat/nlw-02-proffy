@@ -1,24 +1,21 @@
-import React, { useState, FormEvent, useEffect } from 'react';
+import React, { useState, FormEvent } from 'react';
 
 import Input from '../../components/Input';
 import PageHeader from '../../components/PageHeader';
 import Select from '../../components/Select';
 import TeacherItem, { Teacher } from '../../components/TeacherItem';
 import './styles.css';
+import { useGet } from '../../hooks/swr/useGet';
 import { api } from '../../services/api';
 
 const TeacherList: React.FC = () => {
-  const [teachers, setTeachers] = useState<Teacher[]>([]);
+  const { data: teacherData, error } = useGet<Teacher[]>('allClasses');
 
+  const [isFiltered, setIsFiltered] = useState<boolean>(false);
+  const [filteredTeachers, setFilteredTeachers] = useState<Teacher[]>([]);
   const [subject, setSubject] = useState('');
   const [week_day, setWeekDay] = useState('');
   const [time, setTime] = useState('');
-
-  useEffect(() => {
-    api.get<Teacher[]>('allClasses').then(({ data }) => {
-      setTeachers(data);
-    });
-  }, []);
 
   async function searchTeachers(e: FormEvent) {
     e.preventDefault();
@@ -30,7 +27,8 @@ const TeacherList: React.FC = () => {
         time,
       },
     });
-    setTeachers(data);
+    setIsFiltered(true);
+    setFilteredTeachers(data);
   }
 
   return (
@@ -118,9 +116,14 @@ const TeacherList: React.FC = () => {
       </PageHeader>
 
       <main>
-        {teachers.map(teacher => (
-          <TeacherItem key={teacher.id} teacher={teacher} />
-        ))}
+        {isFiltered
+          ? filteredTeachers.map(teacher => (
+              <TeacherItem key={teacher.id} teacher={teacher} />
+            ))
+          : teacherData &&
+            teacherData.map(teacher => (
+              <TeacherItem key={teacher.id} teacher={teacher} />
+            ))}
       </main>
     </div>
   );

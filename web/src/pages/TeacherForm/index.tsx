@@ -38,7 +38,7 @@ const TeacherForm: React.FC = () => {
     setSheduleItems([...scheduleItems, { week_day: 0, from: '', to: '' }]);
   }
 
-  function handleCreateClass(e: FormEvent<HTMLFormElement>) {
+  async function handleCreateClass(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
     const sentData = {
       name,

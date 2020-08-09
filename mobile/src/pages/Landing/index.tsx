@@ -8,10 +8,12 @@ import giveClasses from '../../assets/images/icons/give-classes.png';
 import heartIcon from '../../assets/images/icons/heart.png';
 import studyIcon from '../../assets/images/icons/study.png';
 import landingImg from '../../assets/images/landing.png';
+import { useGet } from '../../hooks/swr/useGet';
 
 import { styles } from './styles';
 
 const Landing: React.FC = () => {
+  const { data } = useGet<{ total: number }>('connections');
   const { navigate } = useNavigation();
 
   return (
@@ -42,7 +44,8 @@ const Landing: React.FC = () => {
       </View>
 
       <Text style={styles.totalConnections}>
-        Total de 285 conexões já realizadas <Image source={heartIcon} />
+        Total de {data?.total} conexões já realizadas{' '}
+        <Image source={heartIcon} />
       </Text>
     </View>
   );

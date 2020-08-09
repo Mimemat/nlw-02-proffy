@@ -52,8 +52,9 @@
     "@typescript-eslint/no-floating-promises": "off",
     "@typescript-eslint/no-unsafe-assignment": "off",
     "react/display-name": "off",
+    "indent": "off",
     "import/no-extraneous-dependencies": "off",
-    "react-hooks/rules-of-hooks": "off",
+    "operator-linebreak": "off",
     "import-helpers/order-imports": [
       "warn",
       {

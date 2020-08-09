@@ -1,11 +1,14 @@
-import React, { useCallback, useState, useEffect } from 'react';
+import React, { useCallback, useState } from 'react';
 import { View, Image, Text, Linking } from 'react-native';
 import { RectButton } from 'react-native-gesture-handler';
+
+import { mutate as mutateGlobal } from 'swr';
 
 import heartOutlineIcon from '../../assets/images/icons/heart-outline.png';
 import unfavoriteIcon from '../../assets/images/icons/unfavorite.png';
 import whatsappIcon from '../../assets/images/icons/whatsapp.png';
 import { useFavorites } from '../../hooks/favorites';
+import { api } from '../../services/api';
 
 import { styles } from './styles';
 
@@ -21,15 +24,21 @@ export interface Teacher {
 
 interface TeacherItemProps {
   teacher: Teacher;
-  favorited: boolean;
 }
 
-const TeacherItem: React.FC<TeacherItemProps> = ({ teacher, favorited }) => {
+const TeacherItem: React.FC<TeacherItemProps> = ({ teacher }) => {
   const { favorites, changeFavorites } = useFavorites();
-  const [isFavorited, setIsFavorited] = useState<boolean>(favorited);
+  const [isFavorited, setIsFavorited] = useState<boolean>(
+    favorites.includes(teacher.id),
+  );
 
-  function handleLinkToWhatsApp() {
+  async function handleLinkToWhatsApp() {
+    const response = await api.post<number[]>('connections', {
+      userId: teacher.id,
+    });
+    console.log(response.data);
     Linking.openURL(`whatsapp://send?phone=${teacher.whatsapp}`);
+    mutateGlobal('connections', response.data[0]);
   }
 
   const handleToggleFavorite = useCallback(async () => {

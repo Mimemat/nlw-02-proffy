@@ -6,25 +6,21 @@ import { Feather, MaterialIcons } from '@expo/vector-icons';
 
 import PageHeader from '../../components/PageHeader';
 import TeacherItem, { Teacher } from '../../components/TeacherItem';
-import { useFavorites } from '../../hooks/favorites';
+import { useGet } from '../../hooks/swr/useGet';
 import { api } from '../../services/api';
 
 import { styles } from './styles';
 
 const TeacherList: React.FC = () => {
-  const { favorites } = useFavorites();
+  const { data: teacherData } = useGet<Teacher[]>('allClasses');
+
   const [isFiltersVisible, setIsFiltersVisible] = useState<boolean>(false);
-  const [teachers, setTeachers] = useState<Teacher[]>([]);
+  const [isFiltered, setIsFiltered] = useState<boolean>(false);
+  const [filteredTeachers, setFilteredTeachers] = useState<Teacher[]>([]);
 
   const [subject, setSubject] = useState<string>('');
   const [week_day, setWeek_day] = useState<string>('');
   const [time, setTime] = useState<string>('');
-
-  useEffect(() => {
-    api.get<Teacher[]>('allClasses').then(({ data }) => {
-      setTeachers(data);
-    });
-  }, []);
 
   const handleFiltersSubmit = useCallback(async () => {
     const { data } = await api.get<Teacher[]>('classes', {
@@ -35,7 +31,8 @@ const TeacherList: React.FC = () => {
       },
     });
     setIsFiltersVisible(false);
-    setTeachers(data);
+    setIsFiltered(true);
+    setFilteredTeachers(data);
   }, [subject, time, week_day]);
 
   return (
@@ -111,13 +108,14 @@ const TeacherList: React.FC = () => {
           paddingBottom: 16,
         }}
       >
-        {teachers.map(teacher => (
-          <TeacherItem
-            favorited={favorites.includes(teacher.id)}
-            key={teacher.id}
-            teacher={teacher}
-          />
-        ))}
+        {isFiltered
+          ? filteredTeachers.map(teacher => (
+              <TeacherItem key={teacher.id} teacher={teacher} />
+            ))
+          : teacherData &&
+            teacherData.map(teacher => (
+              <TeacherItem key={teacher.id} teacher={teacher} />
+            ))}
       </ScrollView>
     </View>
   );
